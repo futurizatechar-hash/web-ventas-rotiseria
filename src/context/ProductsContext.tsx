@@ -8,13 +8,14 @@ export type Product = {
   description?: string;
   price: string;           // Precio principal (unidad o precio base)
   oldPrice?: string;       // Precio anterior tachado (cuando es oferta)
+  pricePerHalfDozen?: string; // Precio por media docena (cuando aplica)
   pricePerDozen?: string;  // Precio por docena (cuando aplica)
   category: string;
   categoryId?: number;
   stock: boolean;
   image: string;
   isOffer: boolean;
-  saleType: "unidad" | "docena" | "combo";  // unidad: se vende x unidad, docena: se vende x docena, combo: ambas opciones
+  saleType: "unidad" | "docena" | "combo";  // unidad: se vende x unidad, docena: se vende x docena, combo: opciones combinadas
 };
 
 type ProductsContextType = {
@@ -81,6 +82,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       name: "Empanada de Carne a Cuchillo",
       description: "Carne seleccionada cortada a cuchillo, cebolla, morrón, aceitunas y huevo duro.",
       price: "$950",
+      pricePerHalfDozen: "$5.500",
       pricePerDozen: "$10.500",
       category: "Empanadas",
       categoryId: 201,
@@ -94,6 +96,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       name: "Empanada de Jamón y Queso",
       description: "El clásico de siempre, jugosa y llena de sabor. Disponible al horno o frita.",
       price: "$850",
+      pricePerHalfDozen: "$5.000",
       pricePerDozen: "$9.500",
       category: "Empanadas",
       categoryId: 201,
@@ -107,6 +110,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       name: "Empanada de Pollo",
       description: "Pollo desmenuzado con verduras, pimentón dulce y cebolla dorada.",
       price: "$850",
+      pricePerHalfDozen: "$5.000",
       pricePerDozen: "$9.500",
       category: "Empanadas",
       categoryId: 202,
@@ -140,6 +144,31 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       isOffer: false,
       saleType: "unidad"
     },
+    // --- BEBIDAS ---
+    {
+      id: 11,
+      name: "Coca-Cola 1.5L",
+      description: "Gaseosa línea Coca-Cola de litro y medio.",
+      price: "$2.500",
+      category: "Bebidas",
+      categoryId: 4,
+      stock: true,
+      image: "/coca.png",
+      isOffer: false,
+      saleType: "unidad"
+    },
+    {
+      id: 12,
+      name: "Cerveza Quilmes 1L",
+      description: "Cerveza rubia clásica bien fría.",
+      price: "$3.200",
+      category: "Bebidas",
+      categoryId: 4,
+      stock: true,
+      image: "/cerveza.png",
+      isOffer: false,
+      saleType: "unidad"
+    },
     // --- OFERTAS ---
     {
       id: 101,
@@ -160,8 +189,8 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       description: "2 pizzas muzzarella grandes para compartir en familia. ¡No te las pierdas!",
       price: "$11.000",
       oldPrice: "$13.000",
-      category: "Promos",
-      categoryId: 5,
+      category: "Pizzas",
+      categoryId: 1,
       stock: true,
       image: "/3.png",
       isOffer: true,
@@ -173,8 +202,8 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       description: "Elegí los sabores. Carne, jamón y queso, pollo o caprese.",
       price: "$9.500",
       oldPrice: "$11.500",
-      category: "Promos",
-      categoryId: 5,
+      category: "Empanadas",
+      categoryId: 2,
       stock: true,
       image: "/2.png",
       isOffer: true,

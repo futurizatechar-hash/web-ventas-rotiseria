@@ -18,8 +18,9 @@ type CartItem = {
   productId: number;
   name: string;
   quantity: number;
-  unitType: 'unidad' | 'docena';  // unidad: se pide por pieza, docena: se pide por docena
+  unitType: 'unidad' | 'media_docena' | 'docena';  // unidad: se pide por pieza, media_docena: por 1/2 doc, docena: se pide por docena
   price: string;           // precio por unidad
+  pricePerHalfDozen?: string; // precio especial por media docena
   pricePerDozen?: string;  // precio especial por docena
 };
 
@@ -107,7 +108,7 @@ export default function CatalogPage() {
 
   const [selectedProductForCart, setSelectedProductForCart] = useState<Product | null>(null);
   const [modalQuantity, setModalQuantity] = useState(1);
-  const [modalUnitType, setModalUnitType] = useState<'unidad' | 'docena'>('unidad');
+  const [modalUnitType, setModalUnitType] = useState<'unidad' | 'media_docena' | 'docena'>('unidad');
 
   const openAddToCartModal = (product: Product) => {
     setSelectedProductForCart(product);
@@ -125,6 +126,7 @@ export default function CatalogPage() {
       quantity: modalQuantity,
       unitType: modalUnitType,
       price: selectedProductForCart.price,
+      pricePerHalfDozen: selectedProductForCart.pricePerHalfDozen,
       pricePerDozen: selectedProductForCart.pricePerDozen,
     };
     setCartItems([...cartItems, newItem]);
@@ -143,8 +145,11 @@ export default function CatalogPage() {
   };
 
   const getItemSubtotal = (item: CartItem) => {
-    if (item.unitType === 'docena' && item.pricePerDozen) {
-      return parsePrice(item.pricePerDozen) * item.quantity;
+    if (item.unitType === 'docena') {
+      return item.pricePerDozen ? parsePrice(item.pricePerDozen) * item.quantity : parsePrice(item.price) * 12 * item.quantity;
+    }
+    if (item.unitType === 'media_docena') {
+      return item.pricePerHalfDozen ? parsePrice(item.pricePerHalfDozen) * item.quantity : parsePrice(item.price) * 6 * item.quantity;
     }
     return parsePrice(item.price) * item.quantity;
   };
@@ -164,6 +169,8 @@ export default function CatalogPage() {
       const subtotal = getItemSubtotal(item);
       const qLabel = item.unitType === 'docena'
         ? `${item.quantity} docena(s)`
+        : item.unitType === 'media_docena'
+        ? `${item.quantity} media docena(s)`
         : `${item.quantity} unidad(es)`;
       message += `- ${qLabel} de *${item.name}* -> ${formatPrice(subtotal)}\n`;
     });
@@ -176,7 +183,7 @@ export default function CatalogPage() {
       if (addressDetails.trim()) message += `- Detalle: ${addressDetails.trim()}\n`;
     }
     message += `- Pago: ${paymentMethod}\n`;
-    message += `\n¡Muchas gracias! 🍕`;
+    message += `\n¡Muchas gracias!`;
 
     // El número debería venir de una API en un sistema real. Por ahora está hardcodeado.
     const WHATSAPP_NUMBER = "5493518046223"; 
@@ -378,7 +385,7 @@ export default function CatalogPage() {
 
             <div className="space-y-5">
 
-              {/* Selector Unidad / Docena — solo para saleType 'combo' */}
+              {/* Selector Unidad / Media Docena / Docena — solo para saleType 'combo' */}
               {selectedProductForCart.saleType === 'combo' && (
                 <div>
                   <label className="block text-sm font-bold mb-2 text-zinc-300">¿Cómo querés pedirlo?</label>
@@ -386,23 +393,32 @@ export default function CatalogPage() {
                     <button
                       type="button"
                       onClick={() => { setModalUnitType('unidad'); setModalQuantity(1); }}
-                      className={`flex-1 text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'unidad' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
+                      className={`flex-1 text-xs sm:text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'unidad' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
                     >
                       Por Unidad
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setModalUnitType('docena'); setModalQuantity(1); }}
-                      className={`flex-1 text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'docena' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
+                      onClick={() => { setModalUnitType('media_docena'); setModalQuantity(1); }}
+                      className={`flex-1 text-xs sm:text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'media_docena' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
                     >
-                      Por Docena
+                      1/2 Docena
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setModalUnitType('docena'); setModalQuantity(1); }}
+                      className={`flex-1 text-xs sm:text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'docena' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
+                    >
+                      Docena
                     </button>
                   </div>
                   {/* Precio según selección */}
                   <div className="mt-2 px-3 py-2 bg-zinc-900/60 rounded-xl border border-zinc-800">
                     <p className="text-xs text-zinc-500 font-medium">
-                      {modalUnitType === 'docena' && selectedProductForCart.pricePerDozen
-                        ? <>Precio docena: <span className="text-orange-400 font-bold">{selectedProductForCart.pricePerDozen}</span></>
+                      {modalUnitType === 'docena'
+                        ? <>Precio docena: <span className="text-orange-400 font-bold">{selectedProductForCart.pricePerDozen || formatPrice(parsePrice(selectedProductForCart.price) * 12)}</span></>
+                        : modalUnitType === 'media_docena'
+                        ? <>Precio media docena: <span className="text-orange-400 font-bold">{selectedProductForCart.pricePerHalfDozen || formatPrice(parsePrice(selectedProductForCart.price) * 6)}</span></>
                         : <>Precio unidad: <span className="text-zinc-100 font-bold">{selectedProductForCart.price}</span></>
                       }
                     </p>
@@ -413,7 +429,7 @@ export default function CatalogPage() {
               {/* Cantidad */}
               <div>
                 <label className="block text-sm font-bold mb-2 text-zinc-300">
-                  Cantidad ({modalUnitType === 'docena' ? 'Docenas' : 'Unidades'})
+                  Cantidad ({modalUnitType === 'docena' ? 'Docenas' : modalUnitType === 'media_docena' ? 'Medias Docenas' : 'Unidades'})
                 </label>
                 <div className="flex items-center gap-4">
                   <button
@@ -435,7 +451,7 @@ export default function CatalogPage() {
                       className="text-right font-black text-4xl w-24 bg-transparent border-none outline-none focus:ring-0 p-0 m-0 text-zinc-100"
                     />
                     <span className="font-black text-base text-zinc-400 mt-2">
-                      {modalUnitType === 'docena' ? 'DOC' : 'UN'}
+                      {modalUnitType === 'docena' ? 'DOC' : modalUnitType === 'media_docena' ? '1/2 DOC' : 'UN'}
                     </span>
                   </div>
                   <button
@@ -509,10 +525,12 @@ export default function CatalogPage() {
                               <span className="text-xs font-bold text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-md">
                                 {item.unitType === 'docena'
                                   ? `${item.quantity} Docena(s)`
+                                  : item.unitType === 'media_docena'
+                                  ? `${item.quantity} Media Docena(s)`
                                   : `${item.quantity} Unidad(es)`}
                               </span>
                               <span className="text-xs font-medium text-zinc-400">
-                                x {item.unitType === 'docena' && item.pricePerDozen ? item.pricePerDozen : item.price}
+                                x {item.unitType === 'docena' ? (item.pricePerDozen || formatPrice(parsePrice(item.price) * 12)) : item.unitType === 'media_docena' ? (item.pricePerHalfDozen || formatPrice(parsePrice(item.price) * 6)) : item.price}
                               </span>
                             </div>
                             <p className="font-black text-sm text-zinc-100">

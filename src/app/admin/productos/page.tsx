@@ -153,12 +153,13 @@ export default function ProductosPage() {
                         <div className="flex flex-col">
                           {p.isOffer && <span className="text-[10px] text-zinc-500 line-through font-semibold leading-none mb-0.5">{p.oldPrice}</span>}
                           <span className={`font-black ${p.isOffer ? 'text-orange-500' : 'text-zinc-100'}`}>{p.price}</span>
+                          {p.pricePerHalfDozen && <span className="text-[10px] text-zinc-500 font-medium mt-0.5">Media: {p.pricePerHalfDozen}</span>}
                           {p.pricePerDozen && <span className="text-[10px] text-zinc-500 font-medium mt-0.5">Docena: {p.pricePerDozen}</span>}
                         </div>
                       </td>
                       <td className="sm:p-4 hidden sm:table-cell">
                         <span className="text-xs font-semibold bg-zinc-900 px-2 py-1 rounded-lg border border-zinc-800 text-zinc-400 capitalize">
-                          {p.saleType === 'combo' ? 'Ud. / Doc.' : p.saleType}
+                          {p.saleType === 'combo' ? 'Múltiple' : p.saleType}
                         </span>
                       </td>
                       <td className="sm:p-4 mt-3 sm:mt-0">
@@ -343,19 +344,19 @@ export default function ProductosPage() {
                         onClick={() => setSaleType(type)}
                         className={`flex-1 text-xs font-bold py-2.5 rounded-lg transition capitalize ${saleType === type ? 'bg-zinc-950 text-white shadow-sm border border-zinc-800' : 'text-zinc-400 hover:text-white'}`}
                       >
-                        {type === 'combo' ? 'Ud. + Doc.' : type.charAt(0).toUpperCase() + type.slice(1)}
+                        {type === 'combo' ? 'Múltiple' : type.charAt(0).toUpperCase() + type.slice(1)}
                       </button>
                     ))}
                   </div>
                   <p className="text-[11px] text-zinc-500 mt-1.5 leading-tight">
                     {saleType === 'unidad' && '↳ El cliente pide por unidad. Ej: 1 pizza, 2 sándwiches.'}
                     {saleType === 'docena' && '↳ El cliente pide por docena. Ej: 1 docena de empanadas.'}
-                    {saleType === 'combo' && '↳ El cliente puede elegir pedir por unidad O por docena.'}
+                    {saleType === 'combo' && '↳ El cliente puede elegir unidad, media docena o docena.'}
                   </p>
                 </div>
 
                 {/* Precios */}
-                <div className={`grid gap-4 ${saleType === 'combo' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                <div className={`grid gap-4 ${saleType === 'combo' ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'}`}>
                   <div>
                     <label className="block text-sm font-bold mb-1.5 text-zinc-400">
                       {saleType === 'docena' ? 'Precio por Docena' : 'Precio por Unidad'}
@@ -366,14 +367,22 @@ export default function ProductosPage() {
                     </div>
                   </div>
                   {saleType === 'combo' && (
-                    <div>
-                      <label className="block text-sm font-bold mb-1.5 text-zinc-400">Precio por Docena</label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold text-sm">$</span>
-                        <input type="text" className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl pl-8 pr-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium text-zinc-100 placeholder:text-zinc-500" placeholder="0" />
+                    <>
+                      <div>
+                        <label className="block text-sm font-bold mb-1.5 text-zinc-400">Media Docena</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold text-sm">$</span>
+                          <input type="text" className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl pl-8 pr-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium text-zinc-100 placeholder:text-zinc-500" placeholder="0" />
+                        </div>
                       </div>
-                      <p className="text-[11px] text-zinc-500 mt-1.5">Precio especial al pedir docena.</p>
-                    </div>
+                      <div>
+                        <label className="block text-sm font-bold mb-1.5 text-zinc-400">Docena</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold text-sm">$</span>
+                          <input type="text" className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl pl-8 pr-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium text-zinc-100 placeholder:text-zinc-500" placeholder="0" />
+                        </div>
+                      </div>
+                    </>
                   )}
                 </div>
 
