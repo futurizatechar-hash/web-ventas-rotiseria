@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Search, ShoppingBag, Plus, Tag, Filter, ChevronRight, X, Minus, ShoppingCart, Trash2, ArrowLeft, MapPin, Store, CreditCard, ChevronDown } from "lucide-react";
-import { useProducts, Product } from "@/context/ProductsContext";
+import { useProducts, Product, Neighborhood } from "@/context/ProductsContext";
 
 type Category = {
   id: number;
@@ -50,7 +50,7 @@ export default function CatalogPage() {
     }
   };
 
-  const { products } = useProducts();
+  const { products, neighborhoods } = useProducts();
   const offers = products.filter(p => p.isOffer);
 
   const getDescendantIds = (catId: number): number[] => {
@@ -105,6 +105,7 @@ export default function CatalogPage() {
   const [deliveryMethod, setDeliveryMethod] = useState<'retiro' | 'envio'>('retiro');
   const [customerAddress, setCustomerAddress] = useState('');
   const [addressDetails, setAddressDetails] = useState('');
+  const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('Efectivo');
 
   const [selectedProductForCart, setSelectedProductForCart] = useState<Product | null>(null);
@@ -161,6 +162,10 @@ export default function CatalogPage() {
 
   const cartTotal = cartItems.reduce((acc, item) => acc + getItemSubtotal(item), 0);
   
+  const selectedNeighborhood = neighborhoods.find(n => n.id === selectedNeighborhoodId);
+  const deliveryCost = deliveryMethod === 'envio' && selectedNeighborhood ? selectedNeighborhood.deliveryCost : 0;
+  const finalTotal = cartTotal + deliveryCost;
+
   const formatPrice = (num: number) => {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
   };
@@ -185,9 +190,12 @@ export default function CatalogPage() {
     message += `- Método: ${deliveryMethod === 'envio' ? 'Envío a domicilio' : 'Retiro en el local'}\n`;
     if (deliveryMethod === 'envio') {
       message += `- Dirección: ${customerAddress.trim()}\n`;
+      if (selectedNeighborhood) message += `- Barrio/Zona: ${selectedNeighborhood.name}\n`;
       if (addressDetails.trim()) message += `- Detalle: ${addressDetails.trim()}\n`;
+      if (deliveryCost > 0) message += `- Costo de envío: ${formatPrice(deliveryCost)}\n`;
     }
     message += `- Pago: ${paymentMethod}\n`;
+    message += `\n*TOTAL FINAL: ${formatPrice(finalTotal)}*\n`;
     message += `\n¡Muchas gracias!`;
 
     // El número debería venir de una API en un sistema real. Por ahora está hardcodeado.
@@ -589,13 +597,31 @@ export default function CatalogPage() {
 
                   {deliveryMethod === 'envio' && (
                     <div className="animate-in fade-in slide-in-from-top-2 space-y-4">
+                      {neighborhoods.length > 0 && (
+                        <div>
+                          <label className="block text-sm font-bold mb-2 text-zinc-300">Barrio / Zona de Envío *</label>
+                          <select 
+                            value={selectedNeighborhoodId || ''}
+                            onChange={(e) => setSelectedNeighborhoodId(Number(e.target.value))}
+                            className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition font-medium text-sm text-zinc-100 appearance-none"
+                          >
+                            <option value="" disabled className="bg-zinc-900 text-zinc-500">Seleccioná tu barrio</option>
+                            {neighborhoods.map(n => (
+                              <option key={n.id} value={n.id} className="bg-zinc-900 text-zinc-100">
+                                {n.name} (+{formatPrice(n.deliveryCost)})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      
                       <div>
                         <label className="block text-sm font-bold mb-2 text-zinc-300">Dirección de Entrega *</label>
                         <input 
                           type="text" 
                           value={customerAddress}
                           onChange={(e) => setCustomerAddress(e.target.value.toUpperCase())}
-                          placeholder="CALLE, NÚMERO, BARRIO..." 
+                          placeholder="CALLE, NÚMERO..." 
                           className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition font-medium text-sm uppercase text-zinc-100 placeholder:text-zinc-500"
                         />
                       </div>
@@ -632,25 +658,37 @@ export default function CatalogPage() {
               )}
             </div>
 
-            <div className="p-6 bg-zinc-950 border-t border-zinc-900 z-10">
-              <div className="flex items-center justify-between mb-5">
-                <span className="font-bold text-zinc-400 uppercase tracking-wider text-xs">Total Estimado</span>
-                <span className="font-black text-3xl tracking-tight">{formatPrice(cartTotal)}</span>
+            <div className="p-4 bg-zinc-950 border-t border-zinc-900 z-10">
+              <div className="space-y-1 mb-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Subtotal</span>
+                  <span className="font-bold text-zinc-300 text-sm">{formatPrice(cartTotal)}</span>
+                </div>
+                {deliveryCost > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Envío ({selectedNeighborhood?.name})</span>
+                    <span className="font-bold text-zinc-300 text-sm">{formatPrice(deliveryCost)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between pt-1.5 border-t border-zinc-900 mt-2">
+                  <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Total Estimado</span>
+                  <span className="font-black text-2xl tracking-tight text-white">{formatPrice(finalTotal)}</span>
+                </div>
               </div>
               
               {checkoutStep === 'cart' ? (
                 <button 
                   onClick={() => setCheckoutStep('details')}
                   disabled={cartItems.length === 0}
-                  className="w-full flex items-center justify-center gap-2 bg-orange-600 text-white font-black py-4 rounded-xl hover:bg-orange-500 transition active:scale-95 shadow-lg disabled:opacity-50 disabled:shadow-none disabled:active:scale-100"
+                  className="w-full flex items-center justify-center gap-2 bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-500 transition active:scale-95 shadow-lg disabled:opacity-50 disabled:shadow-none disabled:active:scale-100"
                 >
                   Continuar con el Pedido
                 </button>
               ) : (
                 <button 
                   onClick={handleCheckout}
-                  disabled={!customerName.trim() || (deliveryMethod === 'envio' && !customerAddress.trim())}
-                  className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-black py-4 rounded-xl hover:bg-[#20bd5a] transition active:scale-95 shadow-lg shadow-[#25D366]/20 disabled:opacity-50 disabled:shadow-none disabled:active:scale-100"
+                  disabled={!customerName.trim() || (deliveryMethod === 'envio' && (!customerAddress.trim() || (neighborhoods.length > 0 && !selectedNeighborhoodId)))}
+                  className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-black py-3 rounded-xl hover:bg-[#20bd5a] transition active:scale-95 shadow-lg shadow-[#25D366]/20 disabled:opacity-50 disabled:shadow-none disabled:active:scale-100"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
                   Confirmar por WhatsApp
@@ -658,7 +696,7 @@ export default function CatalogPage() {
               )}
               
               {checkoutStep === 'details' && (
-                <p className="text-[11px] text-center font-semibold text-zinc-400 mt-4 leading-relaxed">
+                <p className="text-[11px] text-center font-semibold text-zinc-400 mt-3 leading-relaxed">
                   Al confirmar, se abrirá un chat de WhatsApp con los detalles de tu pedido para coordinar la entrega.
                 </p>
               )}

@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Package, FolderTree, LogOut, LayoutDashboard, Menu, X } from "lucide-react";
+import { Package, FolderTree, LogOut, LayoutDashboard, Menu, X, MapPin } from "lucide-react";
 
 const navItems = [
   { name: "Panel de control", href: "/admin", icon: LayoutDashboard, exact: true },
   { name: "Productos", href: "/admin/productos", icon: Package, exact: false },
   { name: "Categorías", href: "/admin/categorias", icon: FolderTree, exact: true },
+  { name: "Zonas de Envío", href: "/admin/envios", icon: MapPin, exact: true },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

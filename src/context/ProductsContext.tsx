@@ -18,14 +18,28 @@ export type Product = {
   saleType: "unidad" | "docena" | "combo";  // unidad: se vende x unidad, docena: se vende x docena, combo: opciones combinadas
 };
 
+export type Neighborhood = {
+  id: number;
+  name: string;
+  deliveryCost: number;
+};
+
 type ProductsContextType = {
   products: Product[];
   toggleProductStock: (id: number) => void;
+  neighborhoods: Neighborhood[];
+  setNeighborhoods: (neighborhoods: Neighborhood[]) => void;
 };
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
 export function ProductsProvider({ children }: { children: ReactNode }) {
+  const [neighborhoods, setNeighborhoods] = useState<Neighborhood[]>([
+    { id: 1, name: "Yocsina", deliveryCost: 500 },
+    { id: 2, name: "Malagueño", deliveryCost: 1000 },
+    { id: 3, name: "La Perla", deliveryCost: 1500 },
+  ]);
+
   const [products, setProducts] = useState<Product[]>([
     // --- PIZZAS ---
     {
@@ -216,7 +230,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ProductsContext.Provider value={{ products, toggleProductStock }}>
+    <ProductsContext.Provider value={{ products, toggleProductStock, neighborhoods, setNeighborhoods }}>
       {children}
     </ProductsContext.Provider>
   );
