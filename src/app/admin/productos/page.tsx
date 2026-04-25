@@ -46,10 +46,11 @@ export default function ProductosPage() {
               className="bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 pr-8 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-bold text-zinc-300 w-full sm:w-auto"
             >
               <option value="Todas">Todas las Categorías</option>
-              <option value="Vacuno">Vacuno</option>
-              <option value="Cerdo">Cerdo</option>
-              <option value="Aves">Aves</option>
-              <option value="Embutidos">Embutidos</option>
+              <option value="Pizzas">Pizzas</option>
+              <option value="Empanadas">Empanadas</option>
+              <option value="Sándwiches">Sándwiches</option>
+              <option value="Bebidas">Bebidas</option>
+              <option value="Promos">Promos</option>
             </select>
           </div>
           <button 
@@ -259,7 +260,7 @@ export default function ProductosPage() {
               <div className="lg:col-span-3 space-y-4">
                  <div>
                    <label className="block text-sm font-bold mb-1.5 text-zinc-400">Nombre del Producto</label>
-                   <input type="text" className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium text-zinc-100 placeholder:text-zinc-500" placeholder="Ej. Costillitas Aliñadas" />
+                   <input type="text" className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium text-zinc-100 placeholder:text-zinc-500" placeholder="Ej. Pizza Muzzarella Grande" />
                  </div>
                  {!isOffer && (
                    <div className="space-y-4">
@@ -296,20 +297,21 @@ export default function ProductosPage() {
                    <div>
                      <label className="block text-sm font-bold mb-1.5 text-zinc-400">Categoría</label>
                      <select className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium appearance-none text-zinc-100">
-                       <option>Vacuno</option>
-                       <option>Cerdo</option>
-                       <option>Aves</option>
-                       <option>Embutidos</option>
+                       <option>Pizzas</option>
+                       <option>Empanadas</option>
+                       <option>Sándwiches</option>
+                       <option>Bebidas</option>
+                       <option>Promos</option>
                      </select>
                    </div>
                    <div>
                      <label className="block text-sm font-bold mb-1.5 text-zinc-400">Subcategoría</label>
                      <select className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium appearance-none text-zinc-100">
                        <option value="">Selecciona...</option>
-                       <option>Premium</option>
-                       <option>Económico</option>
-                       <option>Parrilla</option>
-                       <option>Cortes Finos</option>
+                       <option>Tradicionales</option>
+                       <option>Especiales</option>
+                       <option>Al Horno</option>
+                       <option>Fritas</option>
                      </select>
                    </div>
                  </div>
@@ -371,7 +373,7 @@ export default function ProductosPage() {
 
                  <div>
                    <label className="block text-sm font-bold mb-1.5 text-zinc-400">Descripción (Opcional)</label>
-                   <textarea className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium resize-none h-24 text-zinc-100 placeholder:text-zinc-500" placeholder="Detalles del corte..."></textarea>
+                   <textarea className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium resize-none h-24 text-zinc-100 placeholder:text-zinc-500" placeholder="Detalles de la preparación..."></textarea>
                  </div>
                  
                  <div className="pt-2">

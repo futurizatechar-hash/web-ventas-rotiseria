@@ -25,15 +25,16 @@ type CartItem = {
 
 export default function CatalogPage() {
   const categories: Category[] = [
-    { id: 1, name: "Vacuno", parentId: null },
-    { id: 101, name: "Asado", parentId: 1 },
-    { id: 1011, name: "Cortes Finos", parentId: 101 },
+    { id: 1, name: "Pizzas", parentId: null },
+    { id: 101, name: "Tradicionales", parentId: 1 },
     { id: 102, name: "Especiales", parentId: 1 },
-    { id: 2, name: "Cerdo", parentId: null },
-    { id: 201, name: "Premium", parentId: 2 },
-    { id: 3, name: "Aves", parentId: null },
-    { id: 4, name: "Embutidos", parentId: null },
-    { id: 401, name: "Parrilla", parentId: 4 },
+    { id: 103, name: "Rellenas", parentId: 1 },
+    { id: 2, name: "Empanadas", parentId: null },
+    { id: 201, name: "Al Horno", parentId: 2 },
+    { id: 202, name: "Fritas", parentId: 2 },
+    { id: 3, name: "Sándwiches", parentId: null },
+    { id: 4, name: "Bebidas", parentId: null },
+    { id: 5, name: "Promos", parentId: null },
   ];
 
   const [selectedPath, setSelectedPath] = useState<number[]>([]);
@@ -234,7 +235,7 @@ export default function CatalogPage() {
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar cortes, embutidos..." 
+              placeholder="Buscar pizzas, empanadas..." 
               className="w-full pl-12 pr-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition font-medium text-sm text-zinc-100 placeholder:text-zinc-500"
             />
           </div>

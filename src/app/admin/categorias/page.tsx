@@ -54,12 +54,16 @@ const CategoryNode = ({ category, allCategories, onEdit, onDelete, depth = 0 }: 
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([
-    { id: 1, name: "Vacuno", parentId: null },
-    { id: 101, name: "Asado", parentId: 1 },
+    { id: 1, name: "Pizzas", parentId: null },
+    { id: 101, name: "Tradicionales", parentId: 1 },
     { id: 102, name: "Especiales", parentId: 1 },
-    { id: 2, name: "Cerdo", parentId: null },
-    { id: 3, name: "Aves", parentId: null },
-    { id: 4, name: "Embutidos", parentId: null },
+    { id: 103, name: "Rellenas", parentId: 1 },
+    { id: 2, name: "Empanadas", parentId: null },
+    { id: 201, name: "Al Horno", parentId: 2 },
+    { id: 202, name: "Fritas", parentId: 2 },
+    { id: 3, name: "Sándwiches", parentId: null },
+    { id: 4, name: "Bebidas", parentId: null },
+    { id: 5, name: "Promos", parentId: null },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
