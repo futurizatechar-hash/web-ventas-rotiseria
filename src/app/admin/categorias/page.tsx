@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Edit2, Trash2, X, FolderTree, CornerDownRight } from "lucide-react";
+import { Plus, Edit2, Trash2, X, FolderTree, CornerDownRight, ChevronDown } from "lucide-react";
 
 type Category = {
   id: number;
@@ -63,7 +63,6 @@ export default function CategoriesPage() {
     { id: 202, name: "Fritas", parentId: 2 },
     { id: 3, name: "Sándwiches", parentId: null },
     { id: 4, name: "Bebidas", parentId: null },
-    { id: 5, name: "Promos", parentId: null },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -209,18 +208,21 @@ export default function CategoriesPage() {
                
                <div>
                  <label className="block text-sm font-bold mb-1.5 text-zinc-400">Categoría Padre</label>
-                 <select 
-                   value={parentId === null ? "" : parentId}
-                   onChange={(e) => setParentId(e.target.value === "" ? null : Number(e.target.value))}
-                   className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium appearance-none text-zinc-100"
-                 >
-                   <option value="">Ninguna (Es categoría principal)</option>
-                   {selectableParents.map(({ cat, depth }) => (
-                     <option key={cat.id} value={cat.id}>
-                       {"—".repeat(depth)} {cat.name}
-                     </option>
-                   ))}
-                 </select>
+                 <div className="relative">
+                   <select 
+                     value={parentId === null ? "" : parentId}
+                     onChange={(e) => setParentId(e.target.value === "" ? null : Number(e.target.value))}
+                     className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl pl-4 pr-10 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium appearance-none text-zinc-100"
+                   >
+                     <option value="" className="bg-zinc-900 text-zinc-100">Ninguna (Es categoría principal)</option>
+                     {selectableParents.map(({ cat, depth }) => (
+                       <option key={cat.id} value={cat.id} className="bg-zinc-900 text-zinc-100">
+                         {"—".repeat(depth)} {cat.name}
+                       </option>
+                     ))}
+                   </select>
+                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" size={16} />
+                 </div>
                </div>
 
                <div className="pt-2">

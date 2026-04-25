@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Search, ShoppingBag, Plus, Tag, Filter, ChevronRight, X, Minus, ShoppingCart, Trash2, ArrowLeft, MapPin, Store, CreditCard } from "lucide-react";
+import { Search, ShoppingBag, Plus, Tag, Filter, ChevronRight, X, Minus, ShoppingCart, Trash2, ArrowLeft, MapPin, Store, CreditCard, ChevronDown } from "lucide-react";
 import { useProducts, Product } from "@/context/ProductsContext";
 
 type Category = {
@@ -14,13 +14,13 @@ type Category = {
 
 
 type CartItem = {
-  id: string; // unique cart item id
+  id: string;
   productId: number;
   name: string;
   quantity: number;
-  unitType: 'peso' | 'unidad';
-  price: string; // original string price
-  estimatedUnitPrice?: string;
+  unitType: 'unidad' | 'docena';  // unidad: se pide por pieza, docena: se pide por docena
+  price: string;           // precio por unidad
+  pricePerDozen?: string;  // precio especial por docena
 };
 
 export default function CatalogPage() {
@@ -34,7 +34,6 @@ export default function CatalogPage() {
     { id: 202, name: "Fritas", parentId: 2 },
     { id: 3, name: "Sándwiches", parentId: null },
     { id: 4, name: "Bebidas", parentId: null },
-    { id: 5, name: "Promos", parentId: null },
   ];
 
   const [selectedPath, setSelectedPath] = useState<number[]>([]);
@@ -108,17 +107,17 @@ export default function CatalogPage() {
 
   const [selectedProductForCart, setSelectedProductForCart] = useState<Product | null>(null);
   const [modalQuantity, setModalQuantity] = useState(1);
-  const [modalUnitType, setModalUnitType] = useState<'peso' | 'unidad'>('peso');
+  const [modalUnitType, setModalUnitType] = useState<'unidad' | 'docena'>('unidad');
 
   const openAddToCartModal = (product: Product) => {
     setSelectedProductForCart(product);
     setModalQuantity(1);
-    setModalUnitType(product.saleType === 'unidad' ? 'unidad' : 'peso');
+    // Por defecto: si vende por docena solo → arranca en docena; si no → unidad
+    setModalUnitType(product.saleType === 'docena' ? 'docena' : 'unidad');
   };
 
   const confirmAddToCart = () => {
     if (!selectedProductForCart) return;
-
     const newItem: CartItem = {
       id: `${selectedProductForCart.id}-${Date.now()}`,
       productId: selectedProductForCart.id,
@@ -126,9 +125,8 @@ export default function CatalogPage() {
       quantity: modalQuantity,
       unitType: modalUnitType,
       price: selectedProductForCart.price,
-      estimatedUnitPrice: selectedProductForCart.estimatedUnitPrice
+      pricePerDozen: selectedProductForCart.pricePerDozen,
     };
-
     setCartItems([...cartItems, newItem]);
     setSelectedProductForCart(null);
     setIsCartOpen(true);
@@ -145,8 +143,8 @@ export default function CatalogPage() {
   };
 
   const getItemSubtotal = (item: CartItem) => {
-    if (item.unitType === 'unidad' && item.estimatedUnitPrice) {
-      return parsePrice(item.estimatedUnitPrice) * item.quantity;
+    if (item.unitType === 'docena' && item.pricePerDozen) {
+      return parsePrice(item.pricePerDozen) * item.quantity;
     }
     return parsePrice(item.price) * item.quantity;
   };
@@ -161,36 +159,24 @@ export default function CatalogPage() {
     if (cartItems.length === 0 || !customerName.trim()) return;
     if (deliveryMethod === 'envio' && !customerAddress.trim()) return;
 
-    let message = `Hola Quadra Pizza, soy *${customerName.trim()}* y me gustaría realizar el siguiente pedido:\n\n`;
+    let message = `¡Hola Quadra Pizza! Soy *${customerName.trim()}* y quiero hacer el siguiente pedido:\n\n`;
     cartItems.forEach(item => {
-      let quantityStr = item.quantity.toString();
-      if (item.unitType === 'peso') {
-        if (item.quantity < 1) {
-          quantityStr = `${Math.round(item.quantity * 1000)} gramos`;
-        } else {
-          quantityStr = `${item.quantity} Kg`;
-        }
-      } else {
-        quantityStr = `${item.quantity} Unidad(es)`;
-      }
-      
       const subtotal = getItemSubtotal(item);
-      const isEstimated = item.unitType === 'unidad' && item.estimatedUnitPrice;
-      
-      message += `- ${quantityStr} de *${item.name}* -> ${formatPrice(subtotal)} ${isEstimated ? '(estimado)' : ''}\n`;
+      const qLabel = item.unitType === 'docena'
+        ? `${item.quantity} docena(s)`
+        : `${item.quantity} unidad(es)`;
+      message += `- ${qLabel} de *${item.name}* -> ${formatPrice(subtotal)}\n`;
     });
-    
-    message += `\n*TOTAL ESTIMADO: ${formatPrice(cartTotal)}*\n`;
-    message += `\n*Detalles de Entrega:*\n`;
-    message += `- Método: ${deliveryMethod === 'envio' ? 'Envío a Domicilio' : 'Retiro en Local'}\n`;
+
+    message += `\n*TOTAL: ${formatPrice(cartTotal)}*\n`;
+    message += `\n*Entrega:*\n`;
+    message += `- Método: ${deliveryMethod === 'envio' ? 'Envío a domicilio' : 'Retiro en el local'}\n`;
     if (deliveryMethod === 'envio') {
       message += `- Dirección: ${customerAddress.trim()}\n`;
-      if (addressDetails.trim()) {
-        message += `- Especificaciones: ${addressDetails.trim()}\n`;
-      }
+      if (addressDetails.trim()) message += `- Detalle: ${addressDetails.trim()}\n`;
     }
     message += `- Pago: ${paymentMethod}\n`;
-    message += "\n¡Muchas gracias!";
+    message += `\n¡Muchas gracias! 🍕`;
 
     // El número debería venir de una API en un sistema real. Por ahora está hardcodeado.
     const WHATSAPP_NUMBER = "5493518046223"; 
@@ -347,8 +333,11 @@ export default function CatalogPage() {
                     <div className="mt-5 flex items-end sm:items-center justify-between gap-2">
                       <div className="flex flex-col">
                         <span className="font-black text-lg sm:text-xl tracking-tight leading-none">{p.price}</span>
-                        {p.saleType === 'ambos' && p.estimatedUnitPrice && (
-                          <span className="text-[9px] sm:text-[10px] font-bold text-orange-500 mt-1">Aprox. {p.estimatedUnitPrice} c/u</span>
+                        {p.saleType === 'combo' && p.pricePerDozen && (
+                          <span className="text-[9px] sm:text-[10px] font-bold text-orange-500 mt-1">Docena: {p.pricePerDozen}</span>
+                        )}
+                        {p.saleType === 'docena' && (
+                          <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 mt-1">por docena</span>
                         )}
                       </div>
                       <button 
@@ -378,82 +367,79 @@ export default function CatalogPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedProductForCart(null)}></div>
           <div className="relative bg-zinc-950 rounded-2xl w-full max-w-sm shadow-2xl p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200 border border-zinc-900">
-            <button 
+            <button
               onClick={() => setSelectedProductForCart(null)}
               className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-900 hover:bg-zinc-800 transition text-zinc-400 hover:text-white"
             >
               <X size={18} />
             </button>
-            <h2 className="text-2xl font-black tracking-tight pr-8 leading-tight mb-2">Agregar al Pedido</h2>
-            <p className="font-bold text-zinc-400 mb-6">{selectedProductForCart.name}</p>
+            <h2 className="text-xl font-black tracking-tight pr-8 leading-tight mb-1">Agregar al Pedido</h2>
+            <p className="text-sm font-semibold text-zinc-400 mb-6">{selectedProductForCart.name}</p>
 
-            <div className="space-y-6">
-              
-              {selectedProductForCart.saleType === 'ambos' && (
+            <div className="space-y-5">
+
+              {/* Selector Unidad / Docena — solo para saleType 'combo' */}
+              {selectedProductForCart.saleType === 'combo' && (
                 <div>
-                  <label className="block text-sm font-bold mb-2 text-zinc-300">Tipo de Venta</label>
+                  <label className="block text-sm font-bold mb-2 text-zinc-300">¿Cómo querés pedirlo?</label>
                   <div className="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
-                    <button 
+                    <button
                       type="button"
-                      onClick={() => {
-                        setModalUnitType('peso');
-                        setModalQuantity(1);
-                      }}
-                      className={`flex-1 flex items-center justify-center gap-2 text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'peso' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
-                    >
-                      Por Peso (Kg)
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        setModalUnitType('unidad');
-                        setModalQuantity(1);
-                      }}
-                      className={`flex-1 flex items-center justify-center gap-2 text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'unidad' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
+                      onClick={() => { setModalUnitType('unidad'); setModalQuantity(1); }}
+                      className={`flex-1 text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'unidad' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
                     >
                       Por Unidad
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => { setModalUnitType('docena'); setModalQuantity(1); }}
+                      className={`flex-1 text-sm font-bold py-2.5 rounded-lg transition ${modalUnitType === 'docena' ? 'bg-zinc-950 text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
+                    >
+                      Por Docena
+                    </button>
+                  </div>
+                  {/* Precio según selección */}
+                  <div className="mt-2 px-3 py-2 bg-zinc-900/60 rounded-xl border border-zinc-800">
+                    <p className="text-xs text-zinc-500 font-medium">
+                      {modalUnitType === 'docena' && selectedProductForCart.pricePerDozen
+                        ? <>Precio docena: <span className="text-orange-400 font-bold">{selectedProductForCart.pricePerDozen}</span></>
+                        : <>Precio unidad: <span className="text-zinc-100 font-bold">{selectedProductForCart.price}</span></>
+                      }
+                    </p>
                   </div>
                 </div>
               )}
 
+              {/* Cantidad */}
               <div>
                 <label className="block text-sm font-bold mb-2 text-zinc-300">
-                  Cantidad ({modalUnitType === 'peso' ? 'Kilos (ej: 0.5 para 500g)' : 'Unidades'})
+                  Cantidad ({modalUnitType === 'docena' ? 'Docenas' : 'Unidades'})
                 </label>
                 <div className="flex items-center gap-4">
-                  <button 
-                    onClick={() => {
-                      const step = modalUnitType === 'peso' ? 0.1 : 1;
-                      const min = modalUnitType === 'peso' ? 0.1 : 1;
-                      setModalQuantity(Math.max(min, Number((modalQuantity - step).toFixed(2))));
-                    }}
+                  <button
+                    onClick={() => setModalQuantity(Math.max(1, modalQuantity - 1))}
                     className="w-12 h-12 flex items-center justify-center rounded-xl bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white transition active:scale-95 shrink-0 border border-zinc-800"
                   >
                     <Minus size={20} />
                   </button>
                   <div className="flex-1 flex items-center justify-center gap-1">
-                    <input 
+                    <input
                       type="number"
                       value={modalQuantity}
                       onChange={(e) => {
-                        let val = parseFloat(e.target.value);
-                        if (isNaN(val) || val < 0) val = modalUnitType === 'peso' ? 0.1 : 1;
-                        setModalQuantity(val);
+                        const val = parseInt(e.target.value);
+                        setModalQuantity(isNaN(val) || val < 1 ? 1 : val);
                       }}
-                      step={modalUnitType === 'peso' ? '0.1' : '1'}
-                      min={modalUnitType === 'peso' ? '0.1' : '1'}
-                      className="text-right font-black text-4xl w-24 bg-transparent border-none outline-none focus:ring-0 p-0 m-0"
+                      step="1"
+                      min="1"
+                      className="text-right font-black text-4xl w-24 bg-transparent border-none outline-none focus:ring-0 p-0 m-0 text-zinc-100"
                     />
-                    <span className="font-black text-xl text-zinc-400 mt-2">
-                      {modalUnitType === 'peso' ? 'KG' : 'UN'}
+                    <span className="font-black text-base text-zinc-400 mt-2">
+                      {modalUnitType === 'docena' ? 'DOC' : 'UN'}
                     </span>
                   </div>
-                  <button 
-                    onClick={() => {
-                      const step = modalUnitType === 'peso' ? 0.1 : 1;
-                      setModalQuantity(Number((modalQuantity + step).toFixed(2)));
-                    }}
+                  <button
+                    onClick={() => setModalQuantity(modalQuantity + 1)}
                     className="w-12 h-12 flex items-center justify-center rounded-xl bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white transition active:scale-95 shrink-0 border border-zinc-800"
                   >
                     <Plus size={20} />
@@ -461,18 +447,19 @@ export default function CatalogPage() {
                 </div>
               </div>
 
-              <div className="pt-4">
-                <button 
+              <div className="pt-2">
+                <button
                   onClick={confirmAddToCart}
-                  className="w-full bg-orange-600 text-white font-bold py-4 rounded-xl hover:bg-orange-500 transition active:scale-95 shadow-lg flex justify-center items-center gap-2"
+                  className="w-full bg-orange-600 text-white font-bold py-4 rounded-xl hover:bg-orange-500 transition active:scale-95 shadow-lg flex justify-center items-center gap-2 text-sm"
                 >
-                  <ShoppingCart size={18} /> Confirmar
+                  <ShoppingCart size={18} /> Agregar al Pedido
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+
 
       {/* Sidebar: Carrito */}
       {isCartOpen && (
@@ -520,19 +507,16 @@ export default function CatalogPage() {
                             <h4 className="font-bold text-zinc-100 leading-tight mb-1">{item.name}</h4>
                             <div className="flex items-center gap-2 mb-2">
                               <span className="text-xs font-bold text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-md">
-                                {item.unitType === 'peso' 
-                                  ? (item.quantity < 1 ? `${Math.round(item.quantity * 1000)} gramos` : `${item.quantity} Kg`) 
+                                {item.unitType === 'docena'
+                                  ? `${item.quantity} Docena(s)`
                                   : `${item.quantity} Unidad(es)`}
                               </span>
                               <span className="text-xs font-medium text-zinc-400">
-                                x {item.unitType === 'unidad' && item.estimatedUnitPrice ? item.estimatedUnitPrice : item.price}
+                                x {item.unitType === 'docena' && item.pricePerDozen ? item.pricePerDozen : item.price}
                               </span>
                             </div>
                             <p className="font-black text-sm text-zinc-100">
                               {formatPrice(getItemSubtotal(item))}
-                              {item.unitType === 'unidad' && item.estimatedUnitPrice && (
-                                <span className="text-[10px] text-orange-500 font-bold ml-1.5 uppercase tracking-wider">(Estimado)</span>
-                              )}
                             </p>
                           </div>
                           <button 
@@ -612,12 +596,13 @@ export default function CatalogPage() {
                       <select 
                         value={paymentMethod}
                         onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl pl-12 pr-4 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition font-medium text-sm appearance-none text-zinc-100"
+                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl pl-12 pr-10 py-3 outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition font-medium text-sm appearance-none text-zinc-100"
                       >
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Transferencia">Transferencia</option>
-                        <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+                        <option value="Efectivo" className="bg-zinc-900 text-zinc-100">Efectivo</option>
+                        <option value="Transferencia" className="bg-zinc-900 text-zinc-100">Transferencia</option>
+                        <option value="Tarjeta de crédito" className="bg-zinc-900 text-zinc-100">Tarjeta de crédito</option>
                       </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" size={16} />
                     </div>
                   </div>
                 </div>

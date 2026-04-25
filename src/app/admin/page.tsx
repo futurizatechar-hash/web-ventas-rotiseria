@@ -24,10 +24,10 @@ export default function AdminDashboardPage() {
   };
 
   const categoriesDef = [
-    { name: "Vacuno", color: "bg-zinc-800" },
-    { name: "Cerdo", color: "bg-zinc-600" },
-    { name: "Aves", color: "bg-zinc-400" },
-    { name: "Embutidos", color: "bg-zinc-300" },
+    { name: "Pizzas", color: "bg-orange-600" },
+    { name: "Empanadas", color: "bg-orange-400" },
+    { name: "Sándwiches", color: "bg-zinc-500" },
+    { name: "Promos", color: "bg-zinc-400" },
   ];
 
   return (
