@@ -22,6 +22,7 @@ type CartItem = {
   price: string;           // precio por unidad
   pricePerHalfDozen?: string; // precio especial por media docena
   pricePerDozen?: string;  // precio especial por docena
+  originalSaleType: "unidad" | "docena" | "combo"; // tipo original de venta
 };
 
 export default function CatalogPage() {
@@ -128,6 +129,7 @@ export default function CatalogPage() {
       price: selectedProductForCart.price,
       pricePerHalfDozen: selectedProductForCart.pricePerHalfDozen,
       pricePerDozen: selectedProductForCart.pricePerDozen,
+      originalSaleType: selectedProductForCart.saleType,
     };
     setCartItems([...cartItems, newItem]);
     setSelectedProductForCart(null);
@@ -146,6 +148,9 @@ export default function CatalogPage() {
 
   const getItemSubtotal = (item: CartItem) => {
     if (item.unitType === 'docena') {
+      if (item.originalSaleType === 'docena') {
+        return parsePrice(item.price) * item.quantity;
+      }
       return item.pricePerDozen ? parsePrice(item.pricePerDozen) * item.quantity : parsePrice(item.price) * 12 * item.quantity;
     }
     if (item.unitType === 'media_docena') {
@@ -530,7 +535,7 @@ export default function CatalogPage() {
                                   : `${item.quantity} Unidad(es)`}
                               </span>
                               <span className="text-xs font-medium text-zinc-400">
-                                x {item.unitType === 'docena' ? (item.pricePerDozen || formatPrice(parsePrice(item.price) * 12)) : item.unitType === 'media_docena' ? (item.pricePerHalfDozen || formatPrice(parsePrice(item.price) * 6)) : item.price}
+                                x {item.unitType === 'docena' ? (item.originalSaleType === 'docena' ? item.price : (item.pricePerDozen || formatPrice(parsePrice(item.price) * 12))) : item.unitType === 'media_docena' ? (item.pricePerHalfDozen || formatPrice(parsePrice(item.price) * 6)) : item.price}
                               </span>
                             </div>
                             <p className="font-black text-sm text-zinc-100">
