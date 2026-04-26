@@ -712,7 +712,7 @@ export default function CatalogPage() {
                   </div>
                 )}
                 <div className="flex items-center justify-between pt-1.5 border-t border-zinc-900 mt-2">
-                  <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Total Estimado</span>
+                  <span className="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Total</span>
                   <span className="font-black text-2xl tracking-tight text-white">{formatPrice(finalTotal)}</span>
                 </div>
               </div>
