@@ -129,13 +129,13 @@ export default function ProductosPage() {
                     <tr key={p.id} className="group hover:bg-zinc-900/40 transition flex flex-col sm:table-row p-4 sm:p-0">
                       <td className="sm:p-4 sm:pl-6 hidden sm:table-cell">
                         <div className="w-12 h-12 rounded-xl bg-zinc-900 overflow-hidden relative border border-zinc-800">
-                          <Image src={p.image} alt={p.name} fill className="object-cover" />
+                          <Image src={p.image} alt={p.name} fill sizes="48px" className="object-cover" />
                         </div>
                       </td>
                       <td className="sm:p-4">
                         <div className="flex items-center gap-4 sm:gap-0">
                           <div className="w-14 h-14 rounded-xl bg-zinc-900 overflow-hidden relative border border-zinc-800 sm:hidden shrink-0">
-                            <Image src={p.image} alt={p.name} fill className="object-cover" />
+                            <Image src={p.image} alt={p.name} fill sizes="56px" className="object-cover" />
                           </div>
                           <div>
                             <p className="font-bold text-[15px] text-zinc-100">{p.name}</p>

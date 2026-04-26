@@ -261,7 +261,7 @@ export default function CatalogPage() {
               <div key={p.id} className="shrink-0 w-[280px] bg-zinc-950 border border-zinc-900 rounded-2xl overflow-hidden flex flex-col relative shadow-sm hover:shadow-md transition-shadow">
                 <div className="absolute top-3 left-3 bg-orange-500 text-white font-black text-[10px] tracking-widest px-3 py-1 rounded-full z-10 animate-pulse">OFERTA</div>
                 <div className="aspect-[4/3] bg-zinc-800 relative overflow-hidden">
-                  <Image src={p.image} alt={p.name} fill className="object-cover hover:scale-105 transition duration-500" />
+                  <Image src={p.image} alt={p.name} fill sizes="280px" className="object-cover hover:scale-105 transition duration-500" />
                 </div>
                 <div className="p-4 flex-1 flex flex-col justify-between border-t border-zinc-900">
                   <div>
@@ -329,7 +329,7 @@ export default function CatalogPage() {
               return (
                 <div key={p.id} className="group relative bg-zinc-950 border border-zinc-900 rounded-2xl overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                   <div className="aspect-[4/3] bg-zinc-800 relative overflow-hidden">
-                    <Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-105 transition duration-500" />
+                    <Image src={p.image} alt={p.name} fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover group-hover:scale-105 transition duration-500" />
                     
                     <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
                       {breadcrumbs.map((crumb, idx) => (
