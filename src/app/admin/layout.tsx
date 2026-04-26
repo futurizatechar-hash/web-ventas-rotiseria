@@ -17,15 +17,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
+    const isAuth = localStorage.getItem("quadra_admin_auth");
+    if (!isAuth) {
+      router.push("/login");
+    } else {
+      setIsAuthorized(true);
+    }
+
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = "auto"; };
-  }, []);
+  }, [router]);
 
   const handleLogout = () => {
+    localStorage.removeItem("quadra_admin_auth");
     router.push('/login');
   };
+
+  if (!isAuthorized) {
+    return <div className="min-h-screen bg-zinc-950 flex items-center justify-center"><span className="w-5 h-5 border-2 border-zinc-700 border-t-white rounded-full animate-spin"></span></div>;
+  }
 
   return (
     <div className="fixed-layout bg-zinc-950 text-zinc-50 font-sans">

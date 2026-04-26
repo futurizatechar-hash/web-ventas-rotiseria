@@ -21,6 +21,7 @@ export default function LoginPage() {
     setTimeout(() => {
       // Mock validation
       if (username === "admin" && password === "admin") {
+        localStorage.setItem("quadra_admin_auth", "true");
         router.push("/admin");
       } else {
         setError(true);
