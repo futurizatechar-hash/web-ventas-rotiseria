@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={`fixed left-0 top-0 w-64 h-screen border-r border-zinc-900 bg-zinc-950 p-6 flex flex-col z-50 transition-transform duration-300 lg:translate-x-0 overflow-y-auto ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="mb-10 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Image src="/logo.webp" alt="Quadra Pizza Logo" width={32} height={32} className="rounded-lg object-cover shadow-md" />
+            <Image src="/logo.jpg" alt="Quadra Pizza Logo" width={32} height={32} className="rounded-lg object-cover shadow-md" />
             <span className="font-black text-xl tracking-tight">Quadra <span className="text-orange-500">Pizza</span></span>
           </div>
           <button className="lg:hidden p-2 text-zinc-400 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
@@ -91,7 +91,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Navbar Movil */}
         <div className="lg:hidden flex items-center justify-between p-4 bg-zinc-950 border-b border-zinc-900 z-30">
           <div className="flex items-center gap-2">
-            <Image src="/logo.webp" alt="Logo" width={32} height={32} className="rounded-lg object-cover" />
+            <Image src="/logo.jpg" alt="Logo" width={32} height={32} className="rounded-lg object-cover" />
             <span className="font-black text-xl tracking-tight">Quadra <span className="text-orange-500">Pizza</span></span>
           </div>
           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 bg-zinc-900 rounded-lg text-zinc-400 active:scale-95 transition-transform">
