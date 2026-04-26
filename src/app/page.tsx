@@ -121,24 +121,48 @@ export default function CatalogPage() {
 
   const confirmAddToCart = () => {
     if (!selectedProductForCart) return;
-    const newItem: CartItem = {
-      id: `${selectedProductForCart.id}-${Date.now()}`,
-      productId: selectedProductForCart.id,
-      name: selectedProductForCart.name,
-      quantity: modalQuantity,
-      unitType: modalUnitType,
-      price: selectedProductForCart.price,
-      pricePerHalfDozen: selectedProductForCart.pricePerHalfDozen,
-      pricePerDozen: selectedProductForCart.pricePerDozen,
-      originalSaleType: selectedProductForCart.saleType,
-    };
-    setCartItems([...cartItems, newItem]);
+    
+    const existingItemIndex = cartItems.findIndex(
+      item => item.productId === selectedProductForCart.id && item.unitType === modalUnitType
+    );
+
+    if (existingItemIndex >= 0) {
+      const updatedCart = [...cartItems];
+      updatedCart[existingItemIndex].quantity += modalQuantity;
+      setCartItems(updatedCart);
+    } else {
+      const newItem: CartItem = {
+        id: `${selectedProductForCart.id}-${modalUnitType}`,
+        productId: selectedProductForCart.id,
+        name: selectedProductForCart.name,
+        quantity: modalQuantity,
+        unitType: modalUnitType,
+        price: selectedProductForCart.price,
+        pricePerHalfDozen: selectedProductForCart.pricePerHalfDozen,
+        pricePerDozen: selectedProductForCart.pricePerDozen,
+        originalSaleType: selectedProductForCart.saleType,
+      };
+      setCartItems([...cartItems, newItem]);
+    }
+    
     setSelectedProductForCart(null);
     setIsCartOpen(true);
   };
 
   const removeFromCart = (id: string) => {
     setCartItems(cartItems.filter(item => item.id !== id));
+  };
+
+  const updateCartItemQuantity = (id: string, delta: number) => {
+    setCartItems(current => 
+      current.map(item => {
+        if (item.id === id) {
+          const newQuantity = Math.max(0, item.quantity + delta);
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      }).filter(item => item.quantity > 0)
+    );
   };
 
   const parsePrice = (priceStr?: string) => {
@@ -550,12 +574,29 @@ export default function CatalogPage() {
                               {formatPrice(getItemSubtotal(item))}
                             </p>
                           </div>
-                          <button 
-                            onClick={() => removeFromCart(item.id)}
-                            className="text-zinc-400 hover:text-orange-500 p-2 rounded-lg hover:bg-zinc-800 transition"
-                          >
-                            <Trash2 size={16} className="lucide lucide-trash-2" />
-                          </button>
+                          <div className="flex flex-col items-end gap-2 shrink-0">
+                            <button 
+                              onClick={() => removeFromCart(item.id)}
+                              className="text-zinc-500 hover:text-red-500 p-1.5 rounded-lg hover:bg-zinc-800/80 transition"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-lg p-0.5 mt-auto">
+                              <button
+                                onClick={() => updateCartItemQuantity(item.id, -1)}
+                                className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md transition"
+                              >
+                                <Minus size={14} />
+                              </button>
+                              <span className="font-bold text-sm w-4 text-center text-zinc-100">{item.quantity}</span>
+                              <button
+                                onClick={() => updateCartItemQuantity(item.id, 1)}
+                                className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md transition"
+                              >
+                                <Plus size={14} />
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
