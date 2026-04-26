@@ -235,7 +235,7 @@ export default function CatalogPage() {
       <header className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur-xl border-b border-zinc-900">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Image src="/logo.webp" alt="Quadra Pizza Logo" width={32} height={32} className="rounded-lg object-cover shadow-md" />
+            <Image src="/logo.jpg" alt="Quadra Pizza Logo" width={32} height={32} className="rounded-lg object-cover shadow-md" />
             <span className="font-black text-xl tracking-tight">Quadra <span className="text-orange-500">Pizza</span></span>
           </div>
           
