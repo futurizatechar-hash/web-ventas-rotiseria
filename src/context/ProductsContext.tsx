@@ -50,7 +50,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Pizzas",
       categoryId: 101,
       stock: true,
-      image: "/1.png",
+      image: "/1.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -62,7 +62,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Pizzas",
       categoryId: 101,
       stock: false,
-      image: "/3.png",
+      image: "/3.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -74,7 +74,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Pizzas",
       categoryId: 102,
       stock: true,
-      image: "/5.png",
+      image: "/5.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -86,7 +86,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Pizzas",
       categoryId: 103,
       stock: true,
-      image: "/3.png",
+      image: "/3.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -101,7 +101,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Empanadas",
       categoryId: 201,
       stock: true,
-      image: "/2.png",
+      image: "/2.webp",
       isOffer: false,
       saleType: "combo"
     },
@@ -115,7 +115,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Empanadas",
       categoryId: 201,
       stock: true,
-      image: "/2.png",
+      image: "/2.webp",
       isOffer: false,
       saleType: "combo"
     },
@@ -129,7 +129,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Empanadas",
       categoryId: 202,
       stock: true,
-      image: "/2.png",
+      image: "/2.webp",
       isOffer: false,
       saleType: "combo"
     },
@@ -142,7 +142,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Sándwiches",
       categoryId: 3,
       stock: true,
-      image: "/4.png",
+      image: "/4.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -154,7 +154,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Sándwiches",
       categoryId: 3,
       stock: true,
-      image: "/4.png",
+      image: "/4.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -167,7 +167,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Bebidas",
       categoryId: 4,
       stock: true,
-      image: "/coca.png",
+      image: "/coca.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -179,7 +179,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Bebidas",
       categoryId: 4,
       stock: true,
-      image: "/cerveza.png",
+      image: "/cerveza.webp",
       isOffer: false,
       saleType: "unidad"
     },
@@ -193,7 +193,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Pizzas",
       categoryId: 102,
       stock: true,
-      image: "/1.png",
+      image: "/1.webp",
       isOffer: true,
       saleType: "unidad"
     },
@@ -206,7 +206,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Pizzas",
       categoryId: 1,
       stock: true,
-      image: "/3.png",
+      image: "/3.webp",
       isOffer: true,
       saleType: "unidad"
     },
@@ -219,7 +219,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       category: "Empanadas",
       categoryId: 2,
       stock: true,
-      image: "/2.png",
+      image: "/2.webp",
       isOffer: true,
       saleType: "docena"
     },

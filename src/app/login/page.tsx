@@ -40,7 +40,7 @@ export default function LoginPage() {
         
         {/* Header del Login */}
         <div className="flex flex-col items-center mb-10">
-          <Image src="/logo.jpg" alt="Quadra Pizza Logo" width={64} height={64} className="rounded-xl object-cover shadow-md mb-5" />
+          <Image src="/logo.webp" alt="Quadra Pizza Logo" width={64} height={64} className="rounded-xl object-cover shadow-md mb-5" />
           <div className="flex items-center gap-2 text-zinc-500 mb-2">
             <ShieldCheck size={14} />
             <h2 className="text-[10px] font-semibold uppercase tracking-widest text-center">Acceso Seguro</h2>
