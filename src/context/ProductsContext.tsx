@@ -15,7 +15,13 @@ export type Product = {
   stock: boolean;
   image: string;
   isOffer: boolean;
-  saleType: "unidad" | "docena" | "combo";  // unidad: se vende x unidad, docena: se vende x docena, combo: opciones combinadas
+  saleType: "unidad" | "docena" | "combo" | "quadra";  // unidad: se vende x unidad, docena: se vende x docena, combo: opciones combinadas, quadra: personalizable por filas
+  quadraConfig?: {
+    totalRows: number;
+    fixedRows: { variety: string; rowCount: number }[];
+    customizableRowsCount: number;
+    availableVarieties: string[];
+  };
 };
 
 export type Neighborhood = {
@@ -89,6 +95,60 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       image: "/3.webp",
       isOffer: false,
       saleType: "unidad"
+    },
+    {
+      id: 13,
+      name: "Quadra 1 (1 Variedad Extra)",
+      description: "Pizza cuadrada de 9 porciones en 3 filas. 2 filas de Muzzarella y 1 fila a elección.",
+      price: "$9.000",
+      category: "Pizzas",
+      categoryId: 102,
+      stock: true,
+      image: "/5.webp",
+      isOffer: false,
+      saleType: "quadra",
+      quadraConfig: {
+        totalRows: 3,
+        fixedRows: [{ variety: "Muzzarella", rowCount: 2 }],
+        customizableRowsCount: 1,
+        availableVarieties: ["Jamón y Morrones", "Fugazzeta", "Calabresa", "Palmitos", "Rúcula"]
+      }
+    },
+    {
+      id: 14,
+      name: "Quadra 2 (2 Variedades Extra)",
+      description: "Pizza cuadrada de 9 porciones en 3 filas. 1 fila de Muzzarella y 2 filas a elección.",
+      price: "$10.500",
+      category: "Pizzas",
+      categoryId: 102,
+      stock: true,
+      image: "/1.webp",
+      isOffer: false,
+      saleType: "quadra",
+      quadraConfig: {
+        totalRows: 3,
+        fixedRows: [{ variety: "Muzzarella", rowCount: 1 }],
+        customizableRowsCount: 2,
+        availableVarieties: ["Jamón y Morrones", "Fugazzeta", "Calabresa", "Palmitos", "Rúcula"]
+      }
+    },
+    {
+      id: 15,
+      name: "Quadra 3 (3 Variedades)",
+      description: "Pizza cuadrada de 9 porciones en 3 filas. Elegí las 3 variedades que más te gusten.",
+      price: "$12.000",
+      category: "Pizzas",
+      categoryId: 102,
+      stock: true,
+      image: "/5.webp",
+      isOffer: false,
+      saleType: "quadra",
+      quadraConfig: {
+        totalRows: 3,
+        fixedRows: [],
+        customizableRowsCount: 3,
+        availableVarieties: ["Muzzarella", "Jamón y Morrones", "Fugazzeta", "Calabresa", "Palmitos", "Rúcula"]
+      }
     },
     // --- EMPANADAS ---
     {

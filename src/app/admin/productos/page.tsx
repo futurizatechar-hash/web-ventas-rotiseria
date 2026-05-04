@@ -15,6 +15,7 @@ export default function ProductosPage() {
   const [saleType, setSaleType] = useState<'unidad' | 'docena' | 'combo'>('unidad');
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todas");
+  const [imageUrl, setImageUrl] = useState("");
 
   const { products, toggleProductStock } = useProducts();
 
@@ -99,6 +100,7 @@ export default function ProductosPage() {
               setInStock(true);
               setImageType('upload');
               setSaleType('unidad');
+              setImageUrl("");
               setIsModalOpen(true);
             }}
             className="flex items-center justify-center gap-2 px-5 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-500 transition active:scale-95 whitespace-nowrap shadow-md w-full sm:w-auto shrink-0 text-sm"
@@ -181,7 +183,13 @@ export default function ProductosPage() {
                               setIsEditing(true);
                               setIsOffer(!!p.isOffer);
                               setInStock(p.stock);
-                              setImageType('upload');
+                              if (p.image) {
+                                setImageType('url');
+                                setImageUrl(p.image);
+                              } else {
+                                setImageType('upload');
+                                setImageUrl("");
+                              }
                               setSaleType(p.saleType);
                               setIsModalOpen(true);
                             }}
@@ -249,23 +257,42 @@ export default function ProductosPage() {
                   </div>
 
                   {imageType === 'upload' ? (
-                    <div className="border-2 border-dashed border-zinc-800 rounded-2xl aspect-[4/3] flex flex-col items-center justify-center bg-zinc-900/50 hover:bg-zinc-900 hover:border-zinc-700 transition cursor-pointer group">
+                    <label className="border-2 border-dashed border-zinc-800 rounded-2xl aspect-[4/3] flex flex-col items-center justify-center bg-zinc-900/50 hover:bg-zinc-900 hover:border-zinc-700 transition cursor-pointer group relative overflow-hidden">
+                      <input 
+                        type="file" 
+                        accept="image/webp, image/jpeg, image/png" 
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const localUrl = URL.createObjectURL(file);
+                            setImageUrl(localUrl);
+                            setImageType("url");
+                          }
+                        }}
+                      />
                       <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center mb-3 shadow-sm group-hover:scale-105 transition border border-zinc-800">
                         <UploadCloud size={20} className="text-zinc-400" />
                       </div>
                       <p className="text-sm font-bold text-zinc-300">Arrastrá una imagen</p>
                       <p className="text-xs text-zinc-500 mt-1">o hacé clic para explorar</p>
-                      <p className="text-[10px] text-zinc-500 mt-3 font-semibold uppercase tracking-wider">PNG, JPG hasta 5MB</p>
-                    </div>
+                      <p className="text-[9px] text-zinc-600 mt-2 font-bold uppercase tracking-widest">WEBP, JPG hasta 5MB</p>
+                    </label>
                   ) : (
                     <div className="space-y-3">
                       <div className="relative">
                         <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
-                        <input type="text" placeholder="https://..." className="w-full pl-9 pr-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium text-zinc-100 placeholder:text-zinc-500" />
+                        <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className="w-full pl-9 pr-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 transition text-sm font-medium text-zinc-100 placeholder:text-zinc-500" />
                       </div>
                       <div className="border border-zinc-800 rounded-2xl aspect-[4/3] flex flex-col items-center justify-center bg-zinc-900/50 overflow-hidden relative text-zinc-500">
-                        <ImageIcon size={32} className="mb-2 opacity-30" />
-                        <span className="text-xs font-semibold">Vista Previa</span>
+                        {imageUrl ? (
+                          <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                        ) : (
+                          <>
+                            <ImageIcon size={32} className="mb-2 opacity-30" />
+                            <span className="text-xs font-semibold">Vista Previa</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}
